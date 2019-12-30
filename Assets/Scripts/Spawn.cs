@@ -112,13 +112,4 @@ public class Spawn : MonoBehaviour
             SceneManager.LoadScene("Game"); //Restarts the game by loading the scene over again
         }
     }
-
-    public bool PieceOnBoard(int x, int y, string name)
-    {
-        if (!PositionOnBoard(x, y)) {
-            return false;
-        }
-
-        return GetPosition(x + 1, y + 1).name == name;
-    }
 }
