@@ -24,3 +24,4 @@
   -If some chess pieces do not appear navigate to Assets > Assets > Sprites and right click and select Reimport.  Keep doing this until they all appear (I hope they fix this annoying Unity bug soon).  
   -Unity version 2019.3.0f3
   -Asset credit to Ajay Karat of Devil's Work.shop http://devilswork.shop/ 
+  -The Text inside the canvas may not be placed properly.  When you open this project make sure the "WinnerText" and "RestartText" GameObjects are correctly positioned above and below the chess board instead of behind it.
