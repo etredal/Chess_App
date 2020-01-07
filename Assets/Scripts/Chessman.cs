@@ -120,10 +120,10 @@ public class Chessman : MonoBehaviour
                 LineMovePlate(0, -1);
                 break;
             case "black_pawn":
-                PawnMovePlate(xBoard, yBoard + 1);
+                PawnMovePlate(xBoard, yBoard - 1);
                 break;
             case "white_pawn":
-                PawnMovePlate(xBoard, yBoard - 1);
+                PawnMovePlate(xBoard, yBoard + 1);
                 break;
         }
     }
