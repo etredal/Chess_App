@@ -4,16 +4,19 @@ using UnityEngine;
 
 public class Chessman : MonoBehaviour
 {
+    //References to objects in our Unity Scene
     public GameObject controller;
-    public GameObject MovePlate;
+    public GameObject movePlate;
 
-    //Matrix positions
+    //Position for this Chesspiece on the Board
+    //The correct position will be set later
     private int xBoard = -1;
     private int yBoard = -1;
 
-    //Type and Player
-    private string player; //black or white
+    //Variable for keeping track of the player it belongs to "black" or "white"
+    private string player;
 
+    //References to all the possible Sprites that this Chesspiece could be
     public Sprite black_queen, black_knight, black_bishop, black_king, black_rook, black_pawn;
     public Sprite white_queen, white_knight, white_bishop, white_king, white_rook, white_pawn;
 
@@ -26,19 +29,20 @@ public class Chessman : MonoBehaviour
         SetCoords();
 
         //Choose correct sprite based on piece's name
-        switch (this.name) {
-            case "black_queen":     this.GetComponent<SpriteRenderer>().sprite = black_queen;   player = "black";   break;
-            case "black_knight":    this.GetComponent<SpriteRenderer>().sprite = black_knight;  player = "black";   break;
-            case "black_bishop":    this.GetComponent<SpriteRenderer>().sprite = black_bishop;  player = "black";   break;
-            case "black_king":      this.GetComponent<SpriteRenderer>().sprite = black_king;    player = "black";   break;
-            case "black_rook":      this.GetComponent<SpriteRenderer>().sprite = black_rook;    player = "black";   break;
-            case "black_pawn":      this.GetComponent<SpriteRenderer>().sprite = black_pawn;    player = "black";   break;
-            case "white_queen":     this.GetComponent<SpriteRenderer>().sprite = white_queen;   player = "white";   break;
-            case "white_knight":    this.GetComponent<SpriteRenderer>().sprite = white_knight;  player = "white";   break;
-            case "white_bishop":    this.GetComponent<SpriteRenderer>().sprite = white_bishop;  player = "white";   break;
-            case "white_king":      this.GetComponent<SpriteRenderer>().sprite = white_king;    player = "white";   break;
-            case "white_rook":      this.GetComponent<SpriteRenderer>().sprite = white_rook;    player = "white";   break;
-            case "white_pawn":      this.GetComponent<SpriteRenderer>().sprite = white_pawn;    player = "white";   break;
+        switch (this.name)
+        {
+            case "black_queen": this.GetComponent<SpriteRenderer>().sprite = black_queen; player = "black"; break;
+            case "black_knight": this.GetComponent<SpriteRenderer>().sprite = black_knight; player = "black"; break;
+            case "black_bishop": this.GetComponent<SpriteRenderer>().sprite = black_bishop; player = "black"; break;
+            case "black_king": this.GetComponent<SpriteRenderer>().sprite = black_king; player = "black"; break;
+            case "black_rook": this.GetComponent<SpriteRenderer>().sprite = black_rook; player = "black"; break;
+            case "black_pawn": this.GetComponent<SpriteRenderer>().sprite = black_pawn; player = "black"; break;
+            case "white_queen": this.GetComponent<SpriteRenderer>().sprite = white_queen; player = "white"; break;
+            case "white_knight": this.GetComponent<SpriteRenderer>().sprite = white_knight; player = "white"; break;
+            case "white_bishop": this.GetComponent<SpriteRenderer>().sprite = white_bishop; player = "white"; break;
+            case "white_king": this.GetComponent<SpriteRenderer>().sprite = white_king; player = "white"; break;
+            case "white_rook": this.GetComponent<SpriteRenderer>().sprite = white_rook; player = "white"; break;
+            case "white_pawn": this.GetComponent<SpriteRenderer>().sprite = white_pawn; player = "white"; break;
         }
     }
 
@@ -57,12 +61,32 @@ public class Chessman : MonoBehaviour
         y += -2.3f;
 
         //Set actual unity values
-        this.transform.position = new Vector3(x,y,0.0f);
+        this.transform.position = new Vector3(x, y, -1.0f);
+    }
+
+    public int GetXBoard()
+    {
+        return xBoard;
+    }
+
+    public int GetYBoard()
+    {
+        return yBoard;
+    }
+
+    public void SetXBoard(int x)
+    {
+        xBoard = x;
+    }
+
+    public void SetYBoard(int y)
+    {
+        yBoard = y;
     }
 
     private void OnMouseUp()
     {
-        if (!controller.GetComponent<Spawn>().IsGameOver() && controller.GetComponent<Spawn>().GetCurrentPlayer() == player)
+        if (!controller.GetComponent<Game>().IsGameOver() && controller.GetComponent<Game>().GetCurrentPlayer() == player)
         {
             //Remove all moveplates relating to previously selected piece
             DestroyMovePlates();
@@ -130,19 +154,19 @@ public class Chessman : MonoBehaviour
 
     public void LineMovePlate(int xIncrement, int yIncrement)
     {
-        Spawn sc = controller.GetComponent<Spawn>();
+        Game sc = controller.GetComponent<Game>();
 
         int x = xBoard + xIncrement;
         int y = yBoard + yIncrement;
 
-        while (sc.PositionOnBoard(x,y) && sc.GetPosition(x,y) == null)
+        while (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y) == null)
         {
             MovePlateSpawn(x, y);
             x += xIncrement;
             y += yIncrement;
         }
 
-        if (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y).GetComponent<Chessman>().player != player) 
+        if (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y).GetComponent<Chessman>().player != player)
         {
             MovePlateAttackSpawn(x, y);
         }
@@ -174,15 +198,16 @@ public class Chessman : MonoBehaviour
 
     public void PointMovePlate(int x, int y)
     {
-        Spawn sc = controller.GetComponent<Spawn>();
-        if (sc.PositionOnBoard(x, y)) {
+        Game sc = controller.GetComponent<Game>();
+        if (sc.PositionOnBoard(x, y))
+        {
             GameObject cp = sc.GetPosition(x, y);
 
             if (cp == null)
             {
                 MovePlateSpawn(x, y);
-            } 
-            else if (cp.GetComponent<Chessman>().player != player) 
+            }
+            else if (cp.GetComponent<Chessman>().player != player)
             {
                 MovePlateAttackSpawn(x, y);
             }
@@ -191,7 +216,7 @@ public class Chessman : MonoBehaviour
 
     public void PawnMovePlate(int x, int y)
     {
-        Spawn sc = controller.GetComponent<Spawn>();
+        Game sc = controller.GetComponent<Game>();
         if (sc.PositionOnBoard(x, y))
         {
             if (sc.GetPosition(x, y) == null)
@@ -199,7 +224,7 @@ public class Chessman : MonoBehaviour
                 MovePlateSpawn(x, y);
             }
 
-            if (sc.PositionOnBoard(x + 1, y) && sc.GetPosition(x + 1, y) != null && sc.GetPosition(x + 1,y).GetComponent<Chessman>().player != player)
+            if (sc.PositionOnBoard(x + 1, y) && sc.GetPosition(x + 1, y) != null && sc.GetPosition(x + 1, y).GetComponent<Chessman>().player != player)
             {
                 MovePlateAttackSpawn(x + 1, y);
             }
@@ -224,9 +249,9 @@ public class Chessman : MonoBehaviour
         //Add constants (pos 0,0)
         x += -2.3f;
         y += -2.3f;
-        
+
         //Set actual unity values
-        GameObject mp = Instantiate(MovePlate, new Vector3(x, y, -3.0f), Quaternion.identity);
+        GameObject mp = Instantiate(movePlate, new Vector3(x, y, -3.0f), Quaternion.identity);
 
         MovePlate mpScript = mp.GetComponent<MovePlate>();
         mpScript.SetReference(gameObject);
@@ -248,31 +273,11 @@ public class Chessman : MonoBehaviour
         y += -2.3f;
 
         //Set actual unity values
-        GameObject mp = Instantiate(MovePlate, new Vector3(x, y, -3.0f), Quaternion.identity);
+        GameObject mp = Instantiate(movePlate, new Vector3(x, y, -3.0f), Quaternion.identity);
 
         MovePlate mpScript = mp.GetComponent<MovePlate>();
         mpScript.attack = true;
         mpScript.SetReference(gameObject);
         mpScript.SetCoords(matrixX, matrixY);
-    }
-
-    public int GetXBoard()
-    {
-        return xBoard;
-    }
-
-    public int GetYBoard()
-    {
-        return yBoard;
-    }
-
-    public void SetXBoard(int x)
-    {
-        xBoard = x;
-    }
-
-    public void SetYBoard(int y)
-    {
-        yBoard = y;
     }
 }
